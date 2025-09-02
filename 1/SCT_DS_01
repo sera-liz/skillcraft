@@ -1,1 +1,73 @@
+# ================================
+# TASK 01: Visualization of a Dataset
+# Using the Iris Dataset
+# ================================
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.datasets import load_iris
+
+# ----------------------------
+# 1. Load the dataset
+# ----------------------------
+iris = load_iris()
+df = pd.DataFrame(iris.data, columns=iris.feature_names)
+df['species'] = iris.target
+df['species'] = df['species'].map({0: 'setosa', 1: 'versicolor', 2: 'virginica'})
+
+print("Dataset Shape:", df.shape)
+print("\nFirst 5 Rows:\n", df.head())
+print("\nSummary Statistics:\n", df.describe())
+
+# ----------------------------
+# 2. Histogram of Petal Length
+# ----------------------------
+plt.figure(figsize=(7,5))
+sns.histplot(df['petal length (cm)'], bins=20, kde=True, color="blue")
+plt.title("Distribution of Petal Lengths in Iris Dataset")
+plt.xlabel("Petal Length (cm)")
+plt.ylabel("Frequency")
+plt.show()
+
+# ----------------------------
+# 3. Bar chart of Average Petal Length per Species
+# ----------------------------
+plt.figure(figsize=(7,5))
+sns.barplot(x="species", y="petal length (cm)", data=df, palette="viridis")
+plt.title("Average Petal Length by Species")
+plt.xlabel("Species")
+plt.ylabel("Average Petal Length (cm)")
+plt.show()
+
+# ----------------------------
+# 4. Boxplot (to detect outliers)
+# ----------------------------
+plt.figure(figsize=(7,5))
+sns.boxplot(x="species", y="sepal width (cm)", data=df, palette="Set2")
+plt.title("Sepal Width Distribution by Species")
+plt.show()
+
+# ----------------------------
+# 5. Violin Plot (distribution + density)
+# ----------------------------
+plt.figure(figsize=(7,5))
+sns.violinplot(x="species", y="petal width (cm)", data=df, palette="muted")
+plt.title("Petal Width Distribution by Species")
+plt.show()
+
+# ----------------------------
+# 6. Pairplot (multi-variable relationships)
+# ----------------------------
+sns.pairplot(df, hue="species", palette="husl", markers=["o", "s", "D"])
+plt.suptitle("Pairplot of Iris Dataset", y=1.02)
+plt.show()
+
+# ----------------------------
+# 7. Correlation Heatmap
+# ----------------------------
+plt.figure(figsize=(7,5))
+sns.heatmap(df.iloc[:, :-1].corr(), annot=True, cmap="coolwarm", linewidths=0.5)
+plt.title("Correlation Heatmap of Iris Features")
+plt.show()
 
