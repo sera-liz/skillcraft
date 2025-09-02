@@ -1,0 +1,80 @@
+# ================================
+# TASK 03: Decision Tree Classifier
+# Dataset: Bank Marketing Dataset
+# ================================
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# ----------------------------
+# 1. Load dataset
+# ----------------------------
+# (Here we simulate loading UCI dataset; replace with actual CSV if available)
+url = "https://archive.ics.uci.edu/ml/machine-learning-databases/00222/bank.csv"
+df = pd.read_csv(url, sep=";")
+print("Dataset Shape:", df.shape)
+print(df.head())
+
+# ----------------------------
+# 2. Encode categorical variables
+# ----------------------------
+label_encoders = {}
+for col in df.select_dtypes(include=['object']).columns:
+    le = LabelEncoder()
+    df[col] = le.fit_transform(df[col])
+    label_encoders[col] = le
+
+print("\nAfter Encoding:\n", df.head())
+
+# ----------------------------
+# 3. Define Features & Target
+# ----------------------------
+X = df.drop(columns=['y'])
+y = df['y']
+
+# Train-Test Split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+print("Training samples:", X_train.shape[0], " Testing samples:", X_test.shape[0])
+
+# ----------------------------
+# 4. Train Decision Tree
+# ----------------------------
+clf = DecisionTreeClassifier(max_depth=5, random_state=42, criterion='entropy')
+clf.fit(X_train, y_train)
+
+# ----------------------------
+# 5. Predictions & Evaluation
+# ----------------------------
+y_pred = clf.predict(X_test)
+
+print("\nAccuracy:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+# ----------------------------
+# 6. Plot Decision Tree
+# ----------------------------
+plt.figure(figsize=(20,10))
+plot_tree(clf, filled=True, feature_names=X.columns, class_names=["No", "Yes"])
+plt.title("Decision Tree for Bank Marketing Dataset")
+plt.show()
+
+# ----------------------------
+# 7. Feature Importance
+# ----------------------------
+importances = pd.Series(clf.feature_importances_, index=X.columns).sort_values(ascending=False)
+
+plt.figure(figsize=(8,6))
+sns.barplot(x=importances, y=importances.index, palette="viridis")
+plt.title("Feature Importance in Decision Tree")
+plt.xlabel("Importance Score")
+plt.ylabel("Feature")
+plt.show()
